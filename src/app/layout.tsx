@@ -7,8 +7,8 @@ import QueryProvider from "@/components/query-provider";
 const inter = Inter({ subsets: ["latin"], weight: ['100', '300', '400', '500', '600', '800'] });
 
 export const metadata: Metadata = {
-  title: "Lawstack Chats",
-  description: "A chat application for law",
+  title: "Lawstack Chats | Open Law Chat",
+  description: "A chat application for law, are you an ABU Zaria student? You can access past questions, courses, and more.",
 };
 
 export default function RootLayout({
