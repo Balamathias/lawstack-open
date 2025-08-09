@@ -377,7 +377,7 @@ const Navbar = ({ user }: NavbarProps) => {
                 animate={{ y: 0, opacity: 1, scale: 1 }}
                 exit={{ y: 20, opacity: 0, scale: 0.95 }}
                 transition={{ type: 'spring', stiffness: 120, damping: 18 }}
-                className="relative w-full max-w-2xl rounded-3xl border border-white/15 bg-white/[0.07] backdrop-blur-2xl shadow-[0_0_50px_-10px_rgba(0,0,0,0.6)] max-h-[80vh] overflow-auto"
+                className="relative w-full max-w-2xl rounded-3xl border border-white/15 bg-white/[0.07] backdrop-blur-2xl shadow-[0_0_50px_-10px_rgba(0,0,0,0.6)]"
               >
                 {/* Decorative background */}
                 <div className="pointer-events-none absolute inset-0">
@@ -396,7 +396,7 @@ const Navbar = ({ user }: NavbarProps) => {
                   />
                 </div>
 
-                <div className="relative p-6 sm:p-8 space-y-6">
+                <div className="relative p-6 sm:p-8 space-y-6  max-h-[80vh] overflow-y-auto">
                   <div className="flex items-start gap-4">
                     <div className="p-3 rounded-2xl bg-gradient-to-br from-purple-500/30 to-blue-500/30 border border-white/20 text-white shadow-inner shadow-white/5">
                       <Heart className="w-6 h-6" />
