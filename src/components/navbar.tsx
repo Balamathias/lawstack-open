@@ -260,7 +260,6 @@ const Navbar = ({ user }: NavbarProps) => {
             </motion.button>
           </div>
         </div>
-        {/* Fixed missing closing bracket above */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
@@ -378,7 +377,7 @@ const Navbar = ({ user }: NavbarProps) => {
                 animate={{ y: 0, opacity: 1, scale: 1 }}
                 exit={{ y: 20, opacity: 0, scale: 0.95 }}
                 transition={{ type: 'spring', stiffness: 120, damping: 18 }}
-                className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-white/15 bg-white/[0.07] backdrop-blur-2xl shadow-[0_0_50px_-10px_rgba(0,0,0,0.6)]"
+                className="relative w-full max-w-2xl rounded-3xl border border-white/15 bg-white/[0.07] backdrop-blur-2xl shadow-[0_0_50px_-10px_rgba(0,0,0,0.6)] max-h-[80vh] overflow-auto"
               >
                 {/* Decorative background */}
                 <div className="pointer-events-none absolute inset-0">
