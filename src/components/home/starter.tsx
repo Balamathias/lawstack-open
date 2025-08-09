@@ -19,7 +19,7 @@ const Starter = () => {
   }
 
   return (
-    <div className="w-full px-4 sm:px-6 py-32 pb-40">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-32 pb-40">
       {/* Heading */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
