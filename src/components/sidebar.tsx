@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 import {
     Home, 
@@ -14,8 +14,10 @@ import {
     TrendingUp, 
     Heart,
     MessageSquare,
-    Scale
+    Scale,
+    Search
 } from 'lucide-react'
+import { useStore } from '@/lib/store'
 
 interface SidebarProps {
     className?: string;
@@ -25,6 +27,17 @@ interface SidebarProps {
 const Sidebar = ({ className = '', user }: SidebarProps) => {
     const router = useRouter()
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+
+    const { setAction } = useStore((state) => state)
+
+    const searchParams = useSearchParams()
+
+    useEffect(() => {
+        const action = searchParams.get('action')
+        if (action && (action === 'search' || action === 'chat' || action === 'none')) {
+            setAction(action as 'search' | 'chat' | 'none')
+        }
+    }, [searchParams, setAction])
     
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -45,18 +58,18 @@ const Sidebar = ({ className = '', user }: SidebarProps) => {
     }
     
     const navigationItems = [
-        { icon: Home, label: 'Home', path: '/', active: true },
-        { icon: Zap, label: 'Ask', path: '#create' },
-        { icon: Star, label: 'Explore', path: '#explore' },
-        { icon: TrendingUp, label: 'Trending', path: '#trending' },
-        { icon: BookOpen, label: 'Library', path: '#library' },
-        { icon: Heart, label: 'Favorites', path: '#favorites' },
-        { icon: MessageSquare, label: 'Chat', path: '#chat' },
+        { icon: Home, label: 'Home', path: '?action=none', active: !searchParams.get('action') || searchParams.get('action') === 'none' },
+        { icon: Zap, label: 'Ask', path: '?action=chat', active: searchParams.get('action') === 'chat' },
+        { icon: Search, label: 'Search', path: '?action=search', active: searchParams.get('action') === 'search' },
+        { icon: TrendingUp, label: 'Trending', path: '?action=trending', active: searchParams.get('action') === 'trending' },
+        { icon: BookOpen, label: 'Library', path: '?action=library', active: searchParams.get('action') === 'library' },
+        { icon: Heart, label: 'Favorites', path: '?action=favorites', active: searchParams.get('action') === 'favorites' },
+        { icon: MessageSquare, label: 'Chat', path: '?action=message', active: searchParams.get('action') === 'message' },
     ]
     
     const bottomItems = [
-        { icon: Settings, label: 'Settings', path: '/settings' },
-        { icon: UserIcon, label: 'Profile', path: '/profile' },
+        { icon: Settings, label: 'Settings', path: '?tab=settings', active: searchParams.get('tab') === 'settings' },
+        { icon: UserIcon, label: 'Profile', path: '?tab=profile', active: searchParams.get('tab') === 'profile' },
     ]
     
     return (

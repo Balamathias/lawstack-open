@@ -1,4 +1,6 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+export const API_URL = process.env.NODE_ENV === 'production'
+  ? process.env.NEXT_PUBLIC_API_URL || 'https://api.lawstack.me/api/v1'
+  : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
 import { AxiosError } from 'axios';
 

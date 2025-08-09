@@ -1,8 +1,7 @@
 'use server'
 
-import axios, { AxiosRequestConfig, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { API_URL } from './utils';
 
 interface RefreshTokenResponse {

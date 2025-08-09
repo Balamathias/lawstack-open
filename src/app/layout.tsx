@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import QueryProvider from "@/components/query-provider";
 
 const inter = Inter({ subsets: ["latin"], weight: ['100', '300', '400', '500', '600', '800'] });
 
@@ -18,9 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={cn(`antialiased`, 'bg-gradient-to-tr from-black via-orange-950 to-black min-h-screen relative', inter.className)}
+        className={cn(`antialiased`, 'bg-gradient-to-tr from-black via-fuchsia-950 to-black min-h-screen relative', inter.className)}
       >
-        {children}
+        <QueryProvider>
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );

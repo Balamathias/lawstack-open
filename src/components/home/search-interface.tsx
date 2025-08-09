@@ -5,7 +5,7 @@ import { Search, Zap, Send, Sparkles, Mic, History, Star, Brain, MessageSquare }
 import { useStore } from '@/lib/store';
 
 interface SearchInterfaceProps {
-    onSearch?: (query: string, type: 'search' | 'chat') => void;
+    onSearch?: (query: string, type: 'search' | 'chat' | 'none') => void;
     onOpenChat?: () => void;
     placeholder?: string;
     className?: string;
@@ -15,7 +15,7 @@ interface SearchInterfaceProps {
 const SearchInterface = ({ 
     onSearch, 
     onOpenChat,
-    placeholder = "Ask anything (e.g Bitcoin, Solana, Rust, Ethereum, etc)...", 
+    placeholder = "Search anything legal (past questions, courses)...", 
     className = "" ,
     isLoading = false
 }: SearchInterfaceProps) => {
@@ -347,7 +347,7 @@ const SearchInterface = ({
                     transition={{ delay: 0.5 }}
                     className="mt-2 text-center"
                 >
-                    <p className="text-white/40 text-[10px] md:text-sm">
+                    <p className="text-white/40 text-[10px] md:text-sm hidden">
                         💡 Sign up for personalized search suggestions and AI chat
                     </p>
                 </motion.div>

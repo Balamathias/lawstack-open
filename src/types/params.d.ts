@@ -17,3 +17,16 @@ export interface AIRequest {
         max_file_size_mb?: number;
     }
 }
+
+export interface SearchParams {
+    q?: string;
+    query?: string;
+    course_id?: string;
+    institution_id?: string;
+    year?: string;
+    semester?: string;
+    session?: string;
+    exam_type?: string;
+    type?: 'mcq' | 'essay';
+    tags?: string;
+}
