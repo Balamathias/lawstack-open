@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, CloudLightning, Zap, Search, Scale, Mail, MessageCircle, ArrowRight, Send, Heart } from 'lucide-react'
+import { Menu, X, Zap, Search, Scale, Mail, MessageCircle, ArrowRight, Send, Heart } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { useStore } from '@/lib/store'
