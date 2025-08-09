@@ -25,12 +25,13 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ className = '', user }: SidebarProps) => {
+    
+    const searchParams = useSearchParams()
     const router = useRouter()
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
     const { setAction } = useStore((state) => state)
 
-    const searchParams = useSearchParams()
 
     useEffect(() => {
         const action = searchParams.get('action')
