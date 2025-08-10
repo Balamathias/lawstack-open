@@ -631,7 +631,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
 
                 {/* Question Preview */}
                 <div className="mb-4">
-                    <p className="text-white/90 line-clamp-2 sm:line-clamp-3 leading-relaxed break-all break-words whitespace-pre-wrap">
+                    <p className="text-white/90 line-clamp-3 text-sm sm:text-base leading-relaxed break-all break-words whitespace-pre-wrap">
                     {markdownToPlainText(question.text)}
                     </p>
                 </div>
