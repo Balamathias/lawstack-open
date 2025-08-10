@@ -577,7 +577,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="group relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                className="group relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden break-words"
                 whileHover={{ scale: 1.01 }}
               >
                 {/* Question Header */}
@@ -632,7 +632,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
                 {/* Question Preview */}
                 <div className="mb-4">
                     <p className="text-white/90 line-clamp-2 sm:line-clamp-3 leading-relaxed break-all break-words whitespace-pre-wrap">
-                    {markdownToPlainText(question.text.substring(0, 200))}...
+                    {markdownToPlainText(question.text)}
                     </p>
                 </div>
 
