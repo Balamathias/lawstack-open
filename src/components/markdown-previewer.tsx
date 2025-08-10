@@ -40,11 +40,6 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
         <div
             className={cn(
                 'markdown-preview text-sm leading-relaxed',
-                // Glassmorphic base styling
-                // 'backdrop-blur-xl bg-white/10 dark:bg-black/10',
-                // 'border border-white/20 dark:border-white/10',
-                // 'rounded-2xl p-8 shadow-2xl',
-                // Professional typography
                 'prose dark:prose-invert prose-headings:font-medium prose-headings:tracking-tight',
                 'prose-a:text-blue-500/90 dark:prose-a:text-blue-400/90 prose-a:no-underline hover:prose-a:underline',
                 'prose-code:bg-white/20 dark:prose-code:bg-black/30 prose-code:backdrop-blur-sm',
@@ -93,7 +88,7 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
                         </h3>
                     ),
                     p: ({ children, ...props }) => (
-                        <p className="mb-4 text-white/80 leading-7" {...props}>
+                        <p className="mb-4 text-white/80 leading-7 break-all break-words whitespace-pre-wrap" {...props}>
                             {children}
                         </p>
                     ),
@@ -241,7 +236,7 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
                     li: ({ children, ...props }) => (
                         <li className="mb-2 flex items-start gap-3 text-white/80" {...props}>
                             <span className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 mt-2.5 flex-shrink-0" />
-                            <span>{children}</span>
+                            <span className="break-all break-words whitespace-pre-wrap">{children}</span>
                         </li>
                     ),
                     blockquote: ({ children, ...props }) => (
