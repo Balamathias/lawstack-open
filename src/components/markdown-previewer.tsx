@@ -90,7 +90,7 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
                         </h3>
                     ),
                     p: ({ children, ...props }) => (
-                        <p className="mb-4 text-white/80 leading-7 break-all break-words whitespace-pre-wrap" {...props}>
+                        <p className="mb-4 text-white/80 leading-7 " {...props}>
                             {children}
                         </p>
                     ),
@@ -238,7 +238,7 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
                     li: ({ children, ...props }) => (
                         <li className="mb-2 flex items-start gap-3 text-white/80" {...props}>
                             <span className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 mt-2.5 flex-shrink-0" />
-                            <span className="break-all break-words whitespace-pre-wrap">{children}</span>
+                            <span className="">{children}</span>
                         </li>
                     ),
                     blockquote: ({ children, ...props }) => (
