@@ -173,7 +173,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
   )
 
   return (
-    <div className="flex flex-col h-full w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-44 pt-32">
+    <div className="flex flex-col h-full w-full max-w-4xl mx-auto px-4 sm:px-6 pb-44 pt-32">
       {/* Search Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
