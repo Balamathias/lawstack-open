@@ -56,6 +56,8 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
                 'prose-td:p-3 prose-td:border prose-td:border-white/10',
                 'prose-li:marker:text-white/60 dark:prose-li:marker:text-white/40',
                 'max-w-none leading-relaxed',
+
+                "overflow-hidden break-words",
                 className
             )}
         >
