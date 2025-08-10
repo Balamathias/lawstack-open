@@ -680,7 +680,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4"
             onClick={closeQuestionModal}
           >
             {/* Backdrop */}
@@ -695,7 +695,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
               className="relative w-full max-w-4xl max-h-[90vh] bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden"
             >
               {/* Modal Header */}
-              <div className="flex items-center justify-between p-6 border-b border-white/10">
+              <div className="flex items-center justify-between p-2.5 sm:p-6 border-b border-white/10">
                 <h2 className="text-xl font-semibold text-white">Question Details</h2>
                 <motion.button
                   onClick={closeQuestionModal}
@@ -708,7 +708,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
               </div>
 
               {/* Modal Content */}
-              <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+              <div className="p-2.5 sm:p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
                 {questionDetails.isPending ? (
                   <div className="flex items-center justify-center py-16">
                     <motion.div
@@ -767,7 +767,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
                     </div>
 
                     {/* Question Content */}
-                    <div className="bg-white/5 rounded-lg p-6">
+                    <div className="bg-white/5 rounded-lg p-2.5 sm:p-6">
                       <h3 className="text-lg font-semibold text-white mb-4">Question</h3>
                       <div className="prose prose-invert max-w-none">
                         <MarkdownPreview content={questionDetails.data.text} />
@@ -776,7 +776,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
 
                     {/* AI Overview */}
                     {questionDetails.data.ai_overview && (
-                      <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-lg p-6">
+                      <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-lg p-2.5 sm:p-6">
                         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                           <Zap className="w-5 h-5 text-purple-400" />
                           AI Overview
