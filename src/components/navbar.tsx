@@ -49,7 +49,7 @@ const Navbar = ({ user }: NavbarProps) => {
     setIsMenuOpen(!isMenuOpen)
   }
 
-  if (action === 'chat') return null
+  // if (action === 'chat') return null
   return (
     <>
       <motion.nav 
@@ -123,7 +123,7 @@ const Navbar = ({ user }: NavbarProps) => {
               className="flex items-center gap-3 cursor-pointer group"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              onClick={() => router.push('?action=none')}
+              onClick={() => history.pushState(null, '', '?action=none')}
             >
               <motion.div
                 className="p-2 rounded-xl bg-white/[0.05] border border-white/[0.1] backdrop-blur-xl"
@@ -263,7 +263,7 @@ const Navbar = ({ user }: NavbarProps) => {
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
-              className="md:hidden mt-4 pt-4 border-t border-white/[0.1]"
+              className="md:hidden mt-4 p-4 border-t border-white/[0.1]"
               initial={{ height: 0, opacity: 0, y: -20 }}
               animate={{ height: "auto", opacity: 1, y: 0 }}
               exit={{ height: 0, opacity: 0, y: -20 }}

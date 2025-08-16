@@ -35,8 +35,8 @@ const Sidebar = ({ className = '', user }: SidebarProps) => {
 
     useEffect(() => {
         const action = searchParams.get('action')
-        if (action && (action === 'search' || action === 'chat' || action === 'none')) {
-            setAction(action as 'search' | 'chat' | 'none')
+        if (action) {
+            setAction(action as any)
         }
     }, [searchParams, setAction])
     
@@ -205,7 +205,7 @@ const Sidebar = ({ className = '', user }: SidebarProps) => {
                     {navigationItems.map((item, index) => (
                         <motion.button
                             key={item.path}
-                            onClick={() => router.push(item.path)}
+                            onClick={() => history.pushState(null, '', item.path)}
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative overflow-hidden group cursor-pointer ${
                                 item.active 
                                     ? 'bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-400/30 text-white shadow-lg' 

@@ -184,7 +184,7 @@ const ChatComponent = forwardRef<ChatComponentRef>((props, ref) => {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between mb-6 sticky top-2 z-10 bg-gradient-to-b from-transparent to-white/10 backdrop-blur-lg p-4 rounded-2xl shadow-lg"
+        className="flex_ hidden items-center justify-between mb-6 sticky top-2 z-10 bg-gradient-to-b from-transparent to-white/10 backdrop-blur-lg p-4 rounded-2xl shadow-lg"
       >
         <div className="flex items-center gap-3">
           <div className="">
@@ -230,7 +230,7 @@ const ChatComponent = forwardRef<ChatComponentRef>((props, ref) => {
       </motion.div>
 
       {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto space-y-6 pr-2">
+      <div className="flex-1 overflow-y-auto space-y-6 pr-2 mt-20">
         <AnimatePresence>
           {messages.length === 0 ? (
             <motion.div
