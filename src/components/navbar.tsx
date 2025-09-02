@@ -90,7 +90,7 @@ const Navbar = ({ user }: NavbarProps) => {
         }}
         transition={{ type: 'spring', stiffness: 140, damping: 18 }}
         className={[
-          'fixed top-0 left-0 right-0 z-40 flex justify-center px-2 sm:px-4',
+          'fixed top-1 left-0 right-0 z-40 flex justify-center px-2 sm:px-4',
           'print:hidden'
         ].join(' ')}
       >
