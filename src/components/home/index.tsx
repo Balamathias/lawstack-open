@@ -14,7 +14,7 @@ import { useSearchParams } from 'next/navigation'
 
 const HomeComponent = () => {
   const { action, isLoading, setIsLoading, setSearchQuery } = useStore((state) => state)
-  const chatComponentRef = useRef<{ sendMessage: (query: string) => void }>(null)
+  const chatComponentRef = useRef<{ sendMessage: (query: string, context?: { chat_type?: 'past_question' | 'course_specific' | 'general'; course_id?: string; past_question_id?: string }) => void }>(null)
   const searchResultsRef = useRef<{ performSearch: (query: string) => void }>(null)
 
   const searchParams = useSearchParams();
@@ -52,7 +52,7 @@ const HomeComponent = () => {
             {actionParam === 'chat' ? (
                 <ChatComponent ref={chatComponentRef} />
             ) : actionParam === 'search' ? (
-                <SearchResults ref={searchResultsRef} />
+                <SearchResults ref={searchResultsRef} chatRef={chatComponentRef} />
             ) : <Starter />}
         </main>
 

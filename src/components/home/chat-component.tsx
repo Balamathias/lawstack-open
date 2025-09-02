@@ -40,13 +40,14 @@ interface Message {
 }
 
 export interface ChatComponentRef {
-  sendMessage: (query: string) => void
+  sendMessage: (query: string, context?: { chat_type?: 'past_question' | 'course_specific' | 'general'; course_id?: string; past_question_id?: string }) => void
 }
 
 const ChatComponent = forwardRef<ChatComponentRef>((props, ref) => {
   const [messages, setMessages] = useState<Message[]>([])
   const [conversationId, setConversationId] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [currentContext, setCurrentContext] = useState<{ chat_type?: 'past_question' | 'course_specific' | 'general'; course_id?: string; past_question_id?: string } | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const chatAgent = useChatAgent()
 
@@ -58,8 +59,13 @@ const ChatComponent = forwardRef<ChatComponentRef>((props, ref) => {
     scrollToBottom()
   }, [messages])
 
-  const handleSendMessage = async (query: string) => {
+  const handleSendMessage = async (query: string, context?: { chat_type?: 'past_question' | 'course_specific' | 'general'; course_id?: string; past_question_id?: string }) => {
     if (!query.trim()) return
+
+    // Update context if provided
+    if (context) {
+      setCurrentContext(context)
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -85,7 +91,7 @@ const ChatComponent = forwardRef<ChatComponentRef>((props, ref) => {
           role: m.role,
           content: m.content
         })),
-        context: conversationId ? { chat_type: 'general' as const } : undefined,
+        context: context || currentContext || (conversationId ? { chat_type: 'general' as const } : undefined),
         config: {
           enable_tools: true,
           enable_follow_up: true,
@@ -172,11 +178,13 @@ const ChatComponent = forwardRef<ChatComponentRef>((props, ref) => {
   const clearChat = () => {
     setMessages([])
     setConversationId(null)
+    setCurrentContext(null)
   }
 
   const startNewChat = () => {
     setMessages([])
     setConversationId(null)
+    setCurrentContext(null)
   }
 
   return (
@@ -232,6 +240,28 @@ const ChatComponent = forwardRef<ChatComponentRef>((props, ref) => {
 
       {/* Messages Container */}
       <div className="flex-1 overflow-y-auto space-y-6 pr-2 mt-20">
+        {/* Context Indicator */}
+        {currentContext && (currentContext.chat_type === 'past_question' || currentContext.chat_type === 'course_specific') && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-xl p-4 backdrop-blur-xl"
+          >
+            <div className="flex items-center gap-2 text-purple-400 text-sm">
+              <Brain className="w-4 h-4" />
+              <span className="font-medium">
+                {currentContext.chat_type === 'past_question' 
+                  ? 'Chatting with past question context' 
+                  : 'Chatting with course context'
+                }
+              </span>
+            </div>
+            <p className="text-white/60 text-xs mt-1">
+              AI responses will be tailored to this specific {currentContext.chat_type === 'past_question' ? 'question' : 'course'}
+            </p>
+          </motion.div>
+        )}
+        
         <AnimatePresence>
           {messages.length === 0 ? (
             <motion.div
@@ -248,9 +278,21 @@ const ChatComponent = forwardRef<ChatComponentRef>((props, ref) => {
               >
                 <Sparkles className="w-8 h-8 text-purple-400" />
               </motion.div>
-              <h3 className="text-xl font-semibold text-white mb-2">Welcome to Lawstack AI Chat</h3>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                {currentContext?.chat_type === 'past_question' 
+                  ? 'Question Analysis Chat'
+                  : currentContext?.chat_type === 'course_specific'
+                  ? 'Course-Specific Chat'
+                  : 'Welcome to Lawstack AI Chat'
+                }
+              </h3>
               <p className="text-white/60 text-sm md:text-base max-w-md">
-                Ask me anything about law, get intelligent analysis, research assistance, chat directly with past questions, just say the word, I am here.
+                {currentContext?.chat_type === 'past_question'
+                  ? 'I have the context of your selected question. Ask me anything about it - explanations, analysis, related concepts, or study tips.'
+                  : currentContext?.chat_type === 'course_specific'
+                  ? 'I\'m focused on your selected course. Ask me about course content, concepts, past questions, or study guidance.'
+                  : 'Ask me anything about law, get intelligent analysis, research assistance, chat directly with past questions, just say the word, I am here.'
+                }
               </p>
             </motion.div>
           ) : (

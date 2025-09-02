@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import { useSearchResults, usePastQuestionDetails, useSearchFilters } from '@/services/client/api'
 import { SearchResultItem } from '@/types/db'
 import { SearchParams } from '@/types/params'
@@ -22,7 +23,8 @@ import {
   Users,
   GraduationCap,
   Zap,
-  ArrowRight
+  ArrowRight,
+  MessageSquare
 } from 'lucide-react'
 import MarkdownPreview from '../markdown-previewer'
 import { markdownToPlainText } from '@/lib/utils'
@@ -31,7 +33,12 @@ export interface SearchResultsRef {
   performSearch: (query: string) => void
 }
 
-const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
+interface SearchResultsProps {
+  chatRef?: React.RefObject<{ sendMessage: (query: string, context?: { chat_type?: 'past_question' | 'course_specific' | 'general'; course_id?: string; past_question_id?: string }) => void } | null>
+}
+
+const SearchResults = forwardRef<SearchResultsRef, SearchResultsProps>(({ chatRef }, ref) => {
+  const router = useRouter()
   const { searchQuery: globalSearchQuery } = useStore((state) => state)
   const [searchQuery, setSearchQuery] = useState(globalSearchQuery || '')
   const [filters, setFilters] = useState<SearchParams>({})
@@ -115,6 +122,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
 
   // Add missing modal handlers
   const openQuestionModal = (questionId: string) => {
+    console.log('Opening question modal for:', questionId, 'Chat ref available:', !!chatRef)
     setSelectedQuestion(questionId)
     setShowQuestionModal(true)
     questionDetails.mutate(questionId)
@@ -794,6 +802,50 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
                         </div>
                       </div>
                     )}
+
+                    {/* Chat with Question Action */}
+                    <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl p-4">
+                      <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
+                        <MessageSquare className="w-5 h-5 text-blue-400" />
+                        Chat with this Question
+                      </h3>
+                      <p className="text-white/70 text-sm mb-4">
+                        Get AI assistance with contextual understanding of this specific question
+                      </p>
+                      <motion.button
+                        onClick={() => {
+                          if (chatRef?.current && selectedQuestion) {
+                            console.log('Starting contextual chat with question:', selectedQuestion)
+                            chatRef.current.sendMessage(
+                              "I want to understand this question better. Can you help me analyze it?",
+                              {
+                                chat_type: 'past_question',
+                                past_question_id: selectedQuestion
+                              }
+                            )
+                            closeQuestionModal()
+                            // Navigate to chat view
+                            history.pushState(null, '', '?action=chat')
+                          } else {
+                            console.log('Chat ref or selected question not available:', { 
+                              chatRefExists: !!chatRef?.current, 
+                              selectedQuestion,
+                              chatRefProvided: !!chatRef
+                            })
+                            // Even if chat ref is not ready, still navigate to chat
+                            closeQuestionModal()
+                            history.pushState(null, '', '?action=chat')
+                          }
+                        }}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-lg text-blue-300 hover:from-blue-500/30 hover:to-purple-500/30 hover:border-blue-500/40 transition-all"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <MessageSquare className="w-4 h-4" />
+                        Start Contextual Chat
+                        <ArrowRight className="w-4 h-4" />
+                      </motion.button>
+                    </div>
                   </div>
                 ) : null}
               </div>
