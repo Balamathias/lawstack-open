@@ -53,7 +53,7 @@ const Navbar = ({ user }: NavbarProps) => {
   return (
     <>
       <motion.nav 
-        className="fixed top-3 left-3 right-3 z-50 backdrop-blur-2xl bg-white/[0.02] border border-white/[0.08] rounded-xl sm:rounded-3xl shadow-2xl max-w-4xl mx-auto overflow-hidden"
+        className="fixed top-3 left-3 right-3 z-50 backdrop-blur-2xl bg-white/[0.02] border border-white/[0.08] rounded-xl sm:rounded-3xl shadow-2xl max-w-4xl mx-auto overflow-hidden hidden"
         initial={{ y: -100, opacity: 0, scale: 0.8 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
         transition={{ 

@@ -1,12 +1,16 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useStore } from '@/lib/store'
 import { Search, MessageSquare, Globe, LayoutDashboard, ArrowRight } from 'lucide-react'
 
 const Starter = () => {
-  const { setAction } = useStore((s) => s)
+  const { setAction, action } = useStore((s) => s)
+
+  useEffect(() => {
+    history.pushState(null, '', `?action=${action}`)
+  }, [action])
 
   const containerVariants = {
     hidden: { opacity: 0, y: 12 },

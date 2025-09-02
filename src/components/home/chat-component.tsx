@@ -28,6 +28,7 @@ import {
   Plus
 } from 'lucide-react'
 import MarkdownPreview from '../markdown-previewer'
+import { AIRequest } from '@/types/params'
 
 interface Message {
   id: string
@@ -78,7 +79,7 @@ const ChatComponent = forwardRef<ChatComponentRef>((props, ref) => {
     setMessages(prev => [...prev, userMessage, loadingMessage])
 
     try {
-      const requestData = {
+      const requestData: AIRequest = {
         message: query,
         messages: messages.map(m => ({
           role: m.role,
@@ -88,9 +89,9 @@ const ChatComponent = forwardRef<ChatComponentRef>((props, ref) => {
         config: {
           enable_tools: true,
           enable_follow_up: true,
-          enable_smart_actions: true,
+          enable_smart_actions: false,
           enable_file_processing: true,
-          temperature: 0.7
+          temperature: 0.8
         }
       }
 
@@ -267,7 +268,7 @@ const ChatComponent = forwardRef<ChatComponentRef>((props, ref) => {
                   <motion.div
                     className={`relative backdrop-blur-xl border shadow-lg rounded-2xl p-4 ${
                       message.role === 'user'
-                        ? 'bg-gradient-to-br from-amber-400/10 to-orange-500/10 border-amber-400/20 text-white'
+                        ? 'bg-gradient-to-br from-white/10 to-white/10 border-white/20 text-white'
                         : 'bg-white/5 border-white/10 text-white'
                     }`}
                     whileHover={{ scale: 1.01 }}
@@ -306,7 +307,7 @@ const ChatComponent = forwardRef<ChatComponentRef>((props, ref) => {
                         </div>
 
                         {/* Message Actions */}
-                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
+                        <div className="flex_ items-center justify-between mt-3 pt-3 border-t border-white/10 hidden">
                           <div className="flex items-center gap-2 text-xs text-white/40">
                             <Clock className="w-3 h-3" />
                             {message.timestamp.toLocaleTimeString([], { 

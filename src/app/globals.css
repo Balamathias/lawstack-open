@@ -120,3 +120,70 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Granular immersive background system */
+:root {
+  --bg-deep-1: #05050a;
+  --bg-deep-2: #090b18;
+  --bg-accent-1: rgba(65, 14, 116, 0.35);
+  --bg-accent-2: rgba(4, 58, 149, 0.35);
+  --bg-accent-3: rgba(66, 8, 42, 0.25);
+  --bg-ring: rgba(255,255,255,0.04);
+  --noise-opacity: 0.06;
+}
+
+.app-bg-root {
+  position: fixed;
+  inset: 0;
+  z-index: -20;
+  overflow: hidden;
+  background: radial-gradient(circle at 15% 20%, var(--bg-accent-1) 0%, transparent 55%),
+              radial-gradient(circle at 85% 30%, var(--bg-accent-2) 0%, transparent 55%),
+              radial-gradient(circle at 50% 85%, var(--bg-accent-3) 0%, transparent 60%),
+              linear-gradient(145deg, var(--bg-deep-1), var(--bg-deep-2));
+  background-blend-mode: plus-lighter, plus-lighter, plus-lighter, normal;
+}
+
+/* Animated subtle grain & gradient shimmer */
+.app-bg-anim {
+  position: fixed;
+  inset: 0;
+  z-index: -19;
+  pointer-events: none;
+  background-image:
+    linear-gradient(120deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 70%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0 6px, transparent 6px 12px);
+  mix-blend-mode: overlay;
+  animation: shimmer 18s linear infinite;
+}
+
+.app-bg-noise {
+  position: fixed;
+  inset: 0;
+  z-index: -18;
+  pointer-events: none;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAArUlEQVR4Ae3XwQnCMBQF0FtkA7ZgA9hAFrYgG9iAbCAboAY7JhYlqS8v3lTgwy9nJv1aJCUhISEhL7g9m4wfxcJgPpGZjH6bC5YZ2Q0yYp4HxwR7wI0gCMDuf5xwwZqg6k5vmcJfmfyI4n6UxJ9RXR0bCPTfILgp6WmXoJu4Fjh9kQ6Vf4A1gIZ8s2u4k5qkXwU8SjCdWYAZo6J2K2gN7nB9C3nqNCugO+WIHgAtdf3B1gVvfTigL8gqEgISEhCfyAZpZIhve8g4wAAAABJRU5ErkJggg==");
+  background-size: 400px 400px;
+  opacity: var(--noise-opacity);
+  mix-blend-mode: soft-light;
+  animation: noiseShift 1.8s steps(3) infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 0%, 0 0; }
+  50% { background-position: 60% 50%, 0 0; }
+  100% { background-position: 0% 0%, 0 0; }
+}
+
+@keyframes noiseShift {
+  0% { transform: translate(0,0); }
+  25% { transform: translate(-5%, 3%); }
+  50% { transform: translate(4%, -4%); }
+  75% { transform: translate(-3%, 2%); }
+  100% { transform: translate(0,0); }
+}
+
+/* Light performance guard */
+@media (prefers-reduced-motion: reduce) {
+  .app-bg-anim, .app-bg-noise { animation: none; }
+}

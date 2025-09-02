@@ -10,18 +10,22 @@ import { useStore } from '@/lib/store'
 import ChatComponent from './chat-component'
 import SearchResults from './search-results'
 import Starter from './starter'
+import { useSearchParams } from 'next/navigation'
 
 const HomeComponent = () => {
   const { action, isLoading, setIsLoading, setSearchQuery } = useStore((state) => state)
   const chatComponentRef = useRef<{ sendMessage: (query: string) => void }>(null)
   const searchResultsRef = useRef<{ performSearch: (query: string) => void }>(null)
 
+  const searchParams = useSearchParams();
+  const actionParam = searchParams.get('action');
+
   const handleSearch = (query: string, type: 'search' | 'chat' | 'none') => {
-    if (type === 'chat' && chatComponentRef.current) {
+    if (actionParam === 'chat' && chatComponentRef.current) {
       setIsLoading(true)
       chatComponentRef.current.sendMessage(query)
       // Loading will be set to false when the chat component finishes
-    } else if (type === 'search') {
+    } else if (actionParam === 'search') {
       setSearchQuery(query)
       if (searchResultsRef.current) {
         searchResultsRef.current.performSearch(query)
@@ -45,9 +49,9 @@ const HomeComponent = () => {
         <Sidebar />
 
         <main className='flex flex-col items-center justify-center flex-1 w-full max-w-5xl mx-auto'>
-            {action === 'chat' ? (
+            {actionParam === 'chat' ? (
                 <ChatComponent ref={chatComponentRef} />
-            ) : action === 'search' ? (
+            ) : actionParam === 'search' ? (
                 <SearchResults ref={searchResultsRef} />
             ) : <Starter />}
         </main>

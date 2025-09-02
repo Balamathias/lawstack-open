@@ -35,7 +35,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
   const { searchQuery: globalSearchQuery } = useStore((state) => state)
   const [searchQuery, setSearchQuery] = useState(globalSearchQuery || '')
   const [filters, setFilters] = useState<SearchParams>({})
-  const [showFilters, setShowFilters] = useState(false)
+  const [showFilters, setShowFilters] = useState(false) // repurposed as modal open state
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null)
   const [showQuestionModal, setShowQuestionModal] = useState(false)
 
@@ -47,7 +47,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
     exam_types: true,
     types: true,
     sessions: false,
-    courses: false,
+    courses: true,
     institutions: false,
     tags: false,
   })
@@ -280,244 +280,234 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
           )}
         </div>
 
-        {/* Filters Panel */}
+        {/* Filters Modal */}
         <AnimatePresence>
           {showFilters && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40 flex items-end sm:items-center justify-center p-0 sm:p-6"
+              onClick={() => setShowFilters(false)}
             >
-              <div className="bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl p-4 sm:p-6 space-y-4 sm:space-y-6">
-                {/* Server-driven filters loading */}
-                {searchFilters.isPending && (
-                  <div className="flex items-center gap-2 text-white/70 text-sm">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Loading filters…
+              <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+              <motion.div
+                initial={{ y: 40, opacity: 0, scale: 0.96 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: 20, opacity: 0, scale: 0.96 }}
+                transition={{ type: 'spring', stiffness: 140, damping: 22 }}
+                onClick={(e) => e.stopPropagation()}
+                className="relative w-full max-w-5xl bg-white/10 backdrop-blur-2xl border border-white/15 rounded-t-3xl sm:rounded-3xl shadow-[0_0_50px_-10px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col max-h-[92vh]"
+              >
+                {/* Modal Header */}
+                <div className="sticky top-0 z-10 flex items-center justify-between gap-4 px-4 sm:px-8 py-4 bg-gradient-to-b from-white/10 to-white/0 backdrop-blur-xl border-b border-white/10">
+                  <div className="flex items-center gap-3">
+                    <Filter className="w-5 h-5 text-white/80" />
+                    <h2 className="text-lg sm:text-xl font-semibold text-white tracking-tight hidden md:block">Refine Results</h2>
+                    <span className="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/60">{Object.keys(filters).length + (tagIds.length ? 1 : 0)} active</span>
                   </div>
-                )}
-
-                {/* Courses */}
-                {searchFilters.data?.filters?.courses && (
-                  <div>
-                    <FiltersSectionHeader icon={BookOpen} title="Courses" sectionKey="courses" />
-                    <AnimatePresence>
-                      {expanded.courses && (
-                        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-3">
-                          <input
-                            value={courseQuery}
-                            onChange={(e) => setCourseQuery(e.target.value)}
-                            placeholder="Search course…"
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/20"
-                          />
-                          <div className="flex flex-wrap gap-2">
-                            {searchFilters.data.filters.courses
-                              .filter(c => !courseQuery || (c.name + ' ' + c.code).toLowerCase().includes(courseQuery.toLowerCase()))
-                              .slice(0, 20)
-                              .map((c) => (
-                                <button
-                                  key={c.id}
-                                  onClick={() => handleFilterChange('course_id', c.id)}
-                                  className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${filters.course_id === c.id ? 'bg-blue-500/20 border-blue-500/50 text-blue-300' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}
-                                  title={`${c.name} (${c.code})`}
-                                >
-                                  <span className="font-medium">{c.code}</span> <span className="text-white/60">{c.count}</span>
-                                </button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={clearAllFilters} className="text-xs px-3 py-1.5 rounded-lg bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/10">Reset</button>
+                    <button onClick={() => setShowFilters(false)} className="text-xs px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-500/60 to-blue-500/60 text-white hover:from-purple-500/70 hover:to-blue-500/70 border border-white/10">Done</button>
+                  </div>
+                </div>
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 space-y-8">
+                  {searchFilters.isPending && (
+                    <div className="flex items-center gap-2 text-white/70 text-sm">
+                      <Loader2 className="w-4 h-4 animate-spin" /> Loading filters…
+                    </div>
+                  )}
+                  {/* Helper: function-like inline section to reduce duplication? kept explicit for clarity */}
+                  {/* Courses */}
+                  {searchFilters.data?.filters?.courses && (
+                    <div>
+                      <FiltersSectionHeader icon={BookOpen} title="Courses" sectionKey="courses" />
+                      <AnimatePresence>
+                        {expanded.courses && (
+                          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-3">
+                            <input
+                              value={courseQuery}
+                              onChange={(e) => setCourseQuery(e.target.value)}
+                              placeholder="Search course…"
+                              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/20"
+                            />
+                            <div className="flex flex-wrap gap-2">
+                              {searchFilters.data.filters.courses
+                                .filter(c => !courseQuery || (c.name + ' ' + c.code).toLowerCase().includes(courseQuery.toLowerCase()))
+                                .slice(0, 40)
+                                .map((c) => (
+                                  <button
+                                    key={c.id}
+                                    onClick={() => handleFilterChange('course_id', c.id)}
+                                    className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${filters.course_id === c.id ? 'bg-blue-500/20 border-blue-500/50 text-blue-300 ring-1 ring-blue-400/40' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}
+                                    title={`${c.name} (${c.code})`}
+                                  >
+                                    <span className="font-medium">{c.code}</span> <span className="text-white/60">{c.count}</span>
+                                  </button>
+                                ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+                  {/* Institutions */}
+                  {searchFilters.data?.filters?.institutions && (
+                    <div>
+                      <FiltersSectionHeader icon={Building} title="Institutions" sectionKey="institutions" />
+                      <AnimatePresence>
+                        {expanded.institutions && (
+                          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-3">
+                            <input
+                              value={institutionQuery}
+                              onChange={(e) => setInstitutionQuery(e.target.value)}
+                              placeholder="Search institution…"
+                              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/20"
+                            />
+                            <div className="flex flex-wrap gap-2">
+                              {searchFilters.data.filters.institutions
+                                .filter(i => !institutionQuery || i.name.toLowerCase().includes(institutionQuery.toLowerCase()))
+                                .slice(0, 40)
+                                .map((i) => (
+                                  <button
+                                    key={i.id}
+                                    onClick={() => handleFilterChange('institution_id', i.id)}
+                                    className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${filters.institution_id === i.id ? 'bg-purple-500/20 border-purple-500/50 text-purple-300 ring-1 ring-purple-400/40' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}
+                                    title={i.name}
+                                  >
+                                    <span className="font-medium truncate max-w-[160px] inline-block align-middle">{i.name}</span> <span className="text-white/60">{i.count}</span>
+                                  </button>
+                                ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+                  {/* Years */}
+                  {searchFilters.data?.filters?.years && (
+                    <div>
+                      <FiltersSectionHeader icon={Calendar} title="Year" sectionKey="years" />
+                      <AnimatePresence>
+                        {expanded.years && (
+                          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                            <div className="flex flex-wrap gap-2">
+                              {searchFilters.data.filters.years.map((y) => (
+                                <button key={y.value} onClick={() => handleFilterChange('year', y.value)} className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${filters.year === y.value ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-300 ring-1 ring-indigo-400/40' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}>{y.value} <span className="text-white/60">{y.count}</span></button>
                               ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                )}
-
-                {/* Institutions */}
-                {searchFilters.data?.filters?.institutions && (
-                  <div>
-                    <FiltersSectionHeader icon={Building} title="Institutions" sectionKey="institutions" />
-                    <AnimatePresence>
-                      {expanded.institutions && (
-                        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-3">
-                          <input
-                            value={institutionQuery}
-                            onChange={(e) => setInstitutionQuery(e.target.value)}
-                            placeholder="Search institution…"
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/20"
-                          />
-                          <div className="flex flex-wrap gap-2">
-                            {searchFilters.data.filters.institutions
-                              .filter(i => !institutionQuery || i.name.toLowerCase().includes(institutionQuery.toLowerCase()))
-                              .slice(0, 20)
-                              .map((i) => (
-                                <button
-                                  key={i.id}
-                                  onClick={() => handleFilterChange('institution_id', i.id)}
-                                  className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${filters.institution_id === i.id ? 'bg-purple-500/20 border-purple-500/50 text-purple-300' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}
-                                  title={i.name}
-                                >
-                                  <span className="font-medium truncate max-w-[160px] inline-block align-middle">{i.name}</span> <span className="text-white/60">{i.count}</span>
-                                </button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+                  {/* Semesters */}
+                  {searchFilters.data?.filters?.semesters && (
+                    <div>
+                      <FiltersSectionHeader icon={GraduationCap} title="Semester" sectionKey="semesters" />
+                      <AnimatePresence>
+                        {expanded.semesters && (
+                          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                            <div className="flex flex-wrap gap-2">
+                              {searchFilters.data.filters.semesters.map((s) => (
+                                <button key={s.value} onClick={() => handleFilterChange('semester', s.value)} className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${filters.semester === s.value ? 'bg-pink-500/20 border-pink-500/50 text-pink-300 ring-1 ring-pink-400/40' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}>{s.label} <span className="text-white/60">{s.count}</span></button>
                               ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                )}
-
-                {/* Years */}
-                {searchFilters.data?.filters?.years && (
-                  <div>
-                    <FiltersSectionHeader icon={Calendar} title="Year" sectionKey="years" />
-                    <AnimatePresence>
-                      {expanded.years && (
-                        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-                          <div className="flex flex-wrap gap-2">
-                            {searchFilters.data.filters.years.map((y) => (
-                              <button
-                                key={y.value}
-                                onClick={() => handleFilterChange('year', y.value)}
-                                className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${filters.year === y.value ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-300' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}
-                              >
-                                {y.value} <span className="text-white/60">{y.count}</span>
-                              </button>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                )}
-
-                {/* Semesters */}
-                {searchFilters.data?.filters?.semesters && (
-                  <div>
-                    <FiltersSectionHeader icon={GraduationCap} title="Semester" sectionKey="semesters" />
-                    <AnimatePresence>
-                      {expanded.semesters && (
-                        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-                          <div className="flex flex-wrap gap-2">
-                            {searchFilters.data.filters.semesters.map((s) => (
-                              <button
-                                key={s.value}
-                                onClick={() => handleFilterChange('semester', s.value)}
-                                className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${filters.semester === s.value ? 'bg-pink-500/20 border-pink-500/50 text-pink-300' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}
-                              >
-                                {s.label} <span className="text-white/60">{s.count}</span>
-                              </button>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                )}
-
-                {/* Sessions */}
-                {searchFilters.data?.filters?.sessions && (
-                  <div>
-                    <FiltersSectionHeader icon={Calendar} title="Session" sectionKey="sessions" />
-                    <AnimatePresence>
-                      {expanded.sessions && (
-                        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-                          <div className="flex flex-wrap gap-2">
-                            {searchFilters.data.filters.sessions.map((s) => (
-                              <button
-                                key={s.value}
-                                onClick={() => handleFilterChange('session', s.value)}
-                                className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${filters.session === s.value ? 'bg-teal-500/20 border-teal-500/50 text-teal-300' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}
-                              >
-                                {s.value} <span className="text-white/60">{s.count}</span>
-                              </button>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                )}
-
-                {/* Exam Types */}
-                {searchFilters.data?.filters?.exam_types && (
-                  <div>
-                    <FiltersSectionHeader icon={FileText} title="Exam Type" sectionKey="exam_types" />
-                    <AnimatePresence>
-                      {expanded.exam_types && (
-                        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-                          <div className="flex flex-wrap gap-2">
-                            {searchFilters.data.filters.exam_types.map((e) => (
-                              <button
-                                key={e.value}
-                                onClick={() => handleFilterChange('exam_type', e.value)}
-                                className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${filters.exam_type === e.value ? 'bg-green-500/20 border-green-500/50 text-green-300' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}
-                              >
-                                {e.label} <span className="text-white/60">{e.count}</span>
-                              </button>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                )}
-
-                {/* Types */}
-                {searchFilters.data?.filters?.types && (
-                  <div>
-                    <FiltersSectionHeader icon={Tag} title="Question Type" sectionKey="types" />
-                    <AnimatePresence>
-                      {expanded.types && (
-                        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-                          <div className="flex flex-wrap gap-2">
-                            {searchFilters.data.filters.types.map((t) => (
-                              <button
-                                key={t.value}
-                                onClick={() => handleFilterChange('type', t.value)}
-                                className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${filters.type === (t.value as any) ? 'bg-orange-500/20 border-orange-500/50 text-orange-300' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}
-                              >
-                                {t.label} <span className="text-white/60">{t.count}</span>
-                              </button>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                )}
-
-                {/* Tags */}
-                {searchFilters.data?.filters?.tags && (
-                  <div>
-                    <FiltersSectionHeader icon={Tag} title="Tags" sectionKey="tags" />
-                    <AnimatePresence>
-                      {expanded.tags && (
-                        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-3">
-                          <input
-                            value={tagQuery}
-                            onChange={(e) => setTagQuery(e.target.value)}
-                            placeholder="Search tags…"
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/20"
-                          />
-                          <div className="flex flex-wrap gap-2">
-                            {searchFilters.data.filters.tags
-                              .filter(t => !tagQuery || t.name.toLowerCase().includes(tagQuery.toLowerCase()))
-                              .slice(0, 30)
-                              .map((t) => (
-                                <button
-                                  key={t.id}
-                                  onClick={() => toggleTag(t.id)}
-                                  className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${tagIds.includes(t.id) ? 'bg-sky-500/20 border-sky-500/50 text-sky-300' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}
-                                >
-                                  {t.name} <span className="text-white/60">{t.count}</span>
-                                </button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+                  {/* Sessions */}
+                  {searchFilters.data?.filters?.sessions && (
+                    <div>
+                      <FiltersSectionHeader icon={Calendar} title="Session" sectionKey="sessions" />
+                      <AnimatePresence>
+                        {expanded.sessions && (
+                          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                            <div className="flex flex-wrap gap-2">
+                              {searchFilters.data.filters.sessions.map((s) => (
+                                <button key={s.value} onClick={() => handleFilterChange('session', s.value)} className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${filters.session === s.value ? 'bg-teal-500/20 border-teal-500/50 text-teal-300 ring-1 ring-teal-400/40' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}>{s.value} <span className="text-white/60">{s.count}</span></button>
                               ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                )}
-              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+                  {/* Exam Types */}
+                  {searchFilters.data?.filters?.exam_types && (
+                    <div>
+                      <FiltersSectionHeader icon={FileText} title="Exam Type" sectionKey="exam_types" />
+                      <AnimatePresence>
+                        {expanded.exam_types && (
+                          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                            <div className="flex flex-wrap gap-2">
+                              {searchFilters.data.filters.exam_types.map((e) => (
+                                <button key={e.value} onClick={() => handleFilterChange('exam_type', e.value)} className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${filters.exam_type === e.value ? 'bg-green-500/20 border-green-500/50 text-green-300 ring-1 ring-green-400/40' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}>{e.label} <span className="text-white/60">{e.count}</span></button>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+                  {/* Types */}
+                  {searchFilters.data?.filters?.types && (
+                    <div>
+                      <FiltersSectionHeader icon={Tag} title="Question Type" sectionKey="types" />
+                      <AnimatePresence>
+                        {expanded.types && (
+                          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                            <div className="flex flex-wrap gap-2">
+                              {searchFilters.data.filters.types.map((t) => (
+                                <button key={t.value} onClick={() => handleFilterChange('type', t.value)} className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${filters.type === (t.value as any) ? 'bg-orange-500/20 border-orange-500/50 text-orange-300 ring-1 ring-orange-400/40' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}>{t.label} <span className="text-white/60">{t.count}</span></button>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+                  {/* Tags */}
+                  {searchFilters.data?.filters?.tags && (
+                    <div>
+                      <FiltersSectionHeader icon={Tag} title="Tags" sectionKey="tags" />
+                      <AnimatePresence>
+                        {expanded.tags && (
+                          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-3">
+                            <input
+                              value={tagQuery}
+                              onChange={(e) => setTagQuery(e.target.value)}
+                              placeholder="Search tags…"
+                              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/20"
+                            />
+                            <div className="flex flex-wrap gap-2">
+                              {searchFilters.data.filters.tags
+                                .filter(t => !tagQuery || t.name.toLowerCase().includes(tagQuery.toLowerCase()))
+                                .slice(0, 60)
+                                .map((t) => (
+                                  <button key={t.id} onClick={() => toggleTag(t.id)} className={`px-3 py-1.5 rounded-lg text-xs border transition-all ${tagIds.includes(t.id) ? 'bg-sky-500/20 border-sky-500/50 text-sky-300 ring-1 ring-sky-400/40' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'}`}>{t.name} <span className="text-white/60">{t.count}</span></button>
+                                ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+                </div>
+                {/* Footer shadow accent */}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent" />
+                {/* Close (X) button */}
+                <motion.button
+                  onClick={() => setShowFilters(false)}
+                  className="absolute top-3 right-3 p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition"
+                  whileHover={{ rotate: 90 }}
+                >
+                  <X className="w-4 h-4" />
+                </motion.button>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -577,7 +567,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="group relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden break-words"
+                className="group relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-4 sm:p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden break-words"
                 whileHover={{ scale: 1.01 }}
               >
                 {/* Question Header */}
@@ -631,7 +621,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
 
                 {/* Question Preview */}
                 <div className="mb-4">
-                    <p className="text-white/90 line-clamp-3 text-sm sm:text-base leading-relaxed break-all break-words whitespace-pre-wrap">
+                    <p className="text-white/90 line-clamp-3 text-sm sm:text-base leading-relaxed break-all break-words">
                     {markdownToPlainText(question.text)}
                     </p>
                 </div>
@@ -659,7 +649,7 @@ const SearchResults = forwardRef<SearchResultsRef>((props, ref) => {
                 {/* View Button */}
                 <motion.button
                   onClick={() => openQuestionModal(question.id)}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-3 bg-white/5 border border-white/10 rounded-lg text-white/70 hover:bg-white/10 hover:text-white transition-all"
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-3 bg-white/5 border border-white/10 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >

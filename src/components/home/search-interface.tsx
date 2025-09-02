@@ -144,7 +144,10 @@ const SearchInterface = ({
                         <div className="absolute bottom-2 sm:bottom-6 left-4 sm:left-6 flex gap-1">
                             <motion.button
                                 type="button"
-                                onClick={() => setSearchType('search')}
+                                onClick={() => {
+                                    setSearchType('search')
+                                    history.pushState(null, '', `?action=search`)
+                                }}
                                 className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs sm:text-sm transition-all ${
                                     searchType === 'search'
                                         ? 'bg-white/10 text-white border border-white/20'
@@ -171,7 +174,10 @@ const SearchInterface = ({
                             </motion.button>
                             <motion.button
                                 type="button"
-                                onClick={() => setSearchType('chat')}
+                                onClick={() => {
+                                    setSearchType('chat')
+                                    history.pushState(null, '', `?action=chat`)
+                                }}
                                 className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs sm:text-sm transition-all ${
                                     searchType === 'chat'
                                         ? 'bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-white border border-purple-500/30'
@@ -195,15 +201,6 @@ const SearchInterface = ({
                                         </motion.span>
                                     )}
                                 </AnimatePresence>
-                                {searchType === 'chat' && (
-                                    <motion.span
-                                        initial={{ scale: 0, opacity: 0 }}
-                                        animate={{ scale: 1, opacity: 1 }}
-                                        className="text-xs bg-gradient-to-r from-purple-500 to-blue-500 text-white px-1 py-0.5 rounded-full ml-1"
-                                    >
-                                        ⚡
-                                    </motion.span>
-                                )}
                             </motion.button>
                         </div>
                         
