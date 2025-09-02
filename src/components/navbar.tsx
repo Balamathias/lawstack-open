@@ -97,7 +97,7 @@ const Navbar = ({ user }: NavbarProps) => {
         <motion.nav
           layout
             className={[
-            'relative w-full max-w-6xl flex items-center gap-4',
+            'relative w-full max-w-5xl flex items-center gap-4',
             'rounded-2xl sm:rounded-3xl px-4 sm:px-6',
             'backdrop-blur-xl border transition-all',
             'bg-white/[0.05] border-white/10',
