@@ -283,7 +283,7 @@ const Navbar = ({ user }: NavbarProps) => {
                 className='relative w-full max-w-md rounded-2xl border border-white/15 bg-white/[0.08] backdrop-blur-2xl p-6 shadow-[0_0_40px_-10px_rgba(0,0,0,0.7)]'
               >
                 <h3 className='text-lg font-semibold text-white mb-2'>Coming Soon</h3>
-                <p className='text-sm text-white/60 mb-6'>Authentication & personalization are on the roadmap. Let us know what matters most.</p>
+                <p className='text-sm text-white/60 mb-6'>Authentication & personalization are on the roadmap. Let us know what matters most. Email <a href='mailto:matiecodes@gmail.com' className='text-purple-400'>matiecodes@gmail.com</a> with your suggestions or recommendations</p>
                 <div className='flex justify-end'>
                   <button
                     onClick={() => setShowAuth(false)}
