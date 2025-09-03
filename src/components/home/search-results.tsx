@@ -39,7 +39,7 @@ interface SearchResultsProps {
 
 const SearchResults = forwardRef<SearchResultsRef, SearchResultsProps>(({ chatRef }, ref) => {
   const router = useRouter()
-  const { searchQuery: globalSearchQuery } = useStore((state) => state)
+  const { searchQuery: globalSearchQuery, setSearchQuery: setGlobalSearchQuery } = useStore((state) => state)
   const [searchQuery, setSearchQuery] = useState(globalSearchQuery || '')
   const [filters, setFilters] = useState<SearchParams>({})
   const [showFilters, setShowFilters] = useState(false) // repurposed as modal open state
@@ -137,6 +137,7 @@ const SearchResults = forwardRef<SearchResultsRef, SearchResultsProps>(({ chatRe
   const clearAllFilters = () => {
     setFilters({})
     setTagIds([])
+    setGlobalSearchQuery('')
     const searchParams: SearchParams = {
       q: searchQuery || undefined
     }
