@@ -100,7 +100,7 @@ const Starter = () => {
           variants={cardVariants}
           whileHover={{ y: -2 }}
           whileTap={{ scale: 0.995 }}
-          href="https://lawstack.me/features"
+          href="https://lawstack.me"
           target="_blank"
           rel="noopener noreferrer"
           className="group relative block rounded-2xl p-4 sm:p-6 backdrop-blur-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all"
