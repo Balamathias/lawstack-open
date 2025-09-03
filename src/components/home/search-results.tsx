@@ -138,6 +138,7 @@ const SearchResults = forwardRef<SearchResultsRef, SearchResultsProps>(({ chatRe
     setFilters({})
     setTagIds([])
     setGlobalSearchQuery('')
+    setSearchQuery('')
     const searchParams: SearchParams = {
       q: searchQuery || undefined
     }
